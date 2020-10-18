@@ -15,16 +15,16 @@ $(document).ready(function () {
 
   function updateCities(array) {
     $("#favorite-cities").empty();
-    $(cityID).each(function (idx, elem) {
-      var thisCity = $("<button>").text(array[idx].name).val(array[idx].id);
-      if (idx === cityID.length - 1) {
+    $(array).each(function (idx, elem) {
+      var thisCity = $("<button>").text(elem.name).val(elem.id);
+      if (idx === array.length - 1) {
         thisCity.attr("class", "btn btn-success btn-lg btn-block active");
       } else {
         thisCity.attr("class", "btn btn-lg btn-block btn-success");
       }
       thisCity.appendTo("#favorite-cities");
     });
-    localStorage.setItem("Cities", JSON.stringify(cityID));
+    localStorage.setItem("Cities", JSON.stringify(array));
   }
 
   $("#new-city").on("submit", function (event) {
@@ -34,13 +34,19 @@ $(document).ready(function () {
       url: queryURL,
       method: "GET",
     }).then(function (cityData) {
-      newCity = { name: cityData.name, id: cityData.id };
-      console.log(newCity);
-      //not sure why this if statement isn't working like I want it to.
-      if (!cityID.includes(newCity)) {
-        cityID.push(newCity);
+      var tester = true;
+      var newCity = { name: cityData.name, id: cityData.id };
+      for (var i = 0; i < cityID.length; i++) {
+        if (cityID[i].name === newCity.name) {
+          tester = false;
+          $("#user-city").val("");
+          return;
+        }
       }
-      updateCities(cityID);
+      if ((tester = true)) {
+        cityID.push(newCity);
+        updateCities(cityID);
+      }
       $("#user-city").val("");
     });
   });
