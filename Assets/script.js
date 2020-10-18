@@ -13,5 +13,7 @@ $("#new-city").on("submit", function (event) {
   $.ajax({
     url: queryURL,
     method: "GET",
-  }).then(cityData);
+  }).then(function (cityData) {
+    console.log(cityData);
+  });
 });
