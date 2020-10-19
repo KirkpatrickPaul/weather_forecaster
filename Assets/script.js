@@ -43,29 +43,46 @@ $(document).ready(function () {
       method: "GET",
     }).then(function (forecastData) {
       console.log(forecastData);
-      $("#current-city").text(forecastData.name);
-      var currentDate = moment().format("MMMM Do YYYY");
+      $("#current-city").text(forecastData.current.name);
       var weatherIcon =
         "http://openweathermap.org/img/wn/" +
-        forecastData.weather[0].icon +
+        forecastData.current.weather[0].icon +
         "@2x.png";
-      $("#current-title").text("Weather Conditions on " + currentDate);
       $("#current-conditions").html(
         '<img src="' +
           weatherIcon +
-          ' alt="Current Weather Icon"/> <p>Temperature: ' +
-          forecastData.main.temp +
+          '" alt="Current Weather Icon"/> <p>Temperature: ' +
+          forecastData.current.temp +
           "°F</p> <p>Humidity: " +
-          forecastData.main.humidity +
+          forecastData.current.humidity +
           "%RH</p> <p>Wind Speed: " +
-          forecastData.wind.speed +
+          forecastData.current.wind_speed +
           " MPH</p>"
       );
       var $index = $("<p>").text("UV Index: ");
-      var UV = $index.appendTo("#current-conditions");
+      var UVI = forecastData.current.uvi;
+      if (UVI < 3) {
+        $("<span>")
+          .text(UVI)
+          .attr("class", "badge badge-success")
+          .appendTo($index);
+      } else if (UVI < 5) {
+        $("<span>")
+          .text(UVI)
+          .attr("class", "badge badge-warning")
+          .appendTo($index);
+      } else {
+        $("<span>")
+          .text(UVI)
+          .attr("class", "badge badge-danger")
+          .appendTo($index);
+      }
+      $index.appendTo("#current-conditions");
     });
-    $("#current-card").attr("class", "card");
+    var currentDate = moment().format("MMMM Do YYYY");
+    $("#current-card").attr("class", "card bg-secondary text-white");
     $("#current-city").attr("class", "card-header");
+    $("#current-title").text("Weather Conditions on " + currentDate);
   }
 
   $("#new-city").on("submit", function (event) {
