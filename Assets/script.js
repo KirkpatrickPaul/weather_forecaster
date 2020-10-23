@@ -6,6 +6,9 @@ $(document).ready(function () {
     cityID = JSON.parse(cityString);
   }
   updateCities(cityID);
+  if (cityID[0]) {
+    renderWeather(cityID[cityID.length - 1]);
+  }
 
   function buildCityURL() {
     var queryURL =
@@ -26,15 +29,12 @@ $(document).ready(function () {
   function updateCities(array) {
     $("#favorite-cities").empty().text();
     $(array).each(function (idx, elem) {
-      var thisCity = $("<button>").text(elem.name).val(elem.name);
-      if (idx === array.length - 1) {
-        thisCity.attr("class", "btn btn-success btn-lg btn-block");
-      } else {
-        thisCity.attr("class", "btn btn-lg btn-block btn-success");
-      }
-      thisCity.appendTo("#favorite-cities");
+      $("<button>")
+        .text(elem.name)
+        .attr("data-city", elem.name)
+        .attr("class", "btn btn-lg btn-block btn-success city")
+        .appendTo("#favorite-cities");
     });
-    localStorage.setItem("Cities", JSON.stringify(array));
   }
   //renderWeather has to call a new ajax function so that it can get UVI information and the 5-day forecast.
   function renderWeather(coordObj) {
@@ -43,7 +43,7 @@ $(document).ready(function () {
       url: queryURL,
       method: "GET",
     }).then(function (forecastData) {
-      $("#current-city").text(cityID[cityID.length - 1].name);
+      $("#current-city").text(coordObj.name);
       var weatherIcon =
         "http://openweathermap.org/img/wn/" +
         forecastData.current.weather[0].icon +
@@ -60,6 +60,7 @@ $(document).ready(function () {
           " MPH</p>"
       );
       var $index = $("<p>").text("UV Index: ");
+      // sets the color code for the UV Index
       var UVI = forecastData.current.uvi;
       if (UVI < 3) {
         $("<span>")
@@ -78,9 +79,11 @@ $(document).ready(function () {
           .appendTo($index);
       }
       $index.appendTo("#current-conditions");
+      // this for loop removes and repopulates the 5-day forecast cards, including a progressively more green card-color.
       for (var j = 1; j <= 5; j++) {
+        $("#forecast" + j).empty();
         var forecastCard = $("<div>")
-          .attr("class", "card text-white")
+          .attr("class", "card text-white mt-3")
           .attr(
             "style",
             "background-color: #" +
@@ -118,7 +121,7 @@ $(document).ready(function () {
     });
     var currentDate = moment().format("dddd MMMM Do, YYYY");
     $("#current-card")
-      .attr("class", "card text-white col-md-10")
+      .attr("class", "card text-white col-lg-10")
       .attr("style", "background-color: #888888");
     $("#current-city").attr("class", "card-header");
     $("#current-title").text("Weather Conditions Right Now on " + currentDate);
@@ -148,15 +151,20 @@ $(document).ready(function () {
       if ((tester = true)) {
         cityID.push(newCity);
         updateCities(cityID);
+        localStorage.setItem("Cities", JSON.stringify(cityID));
       }
       renderWeather(newCity);
       $("#user-city").val("");
     });
   });
-  $("#favorite-cities").on("click", function (event) {
-    if (event.target.matches("button")) {
-      var city = event.attr("value");
-    }
-    console.log(city);
+  $(".city").on("click", function (event) {
+    var cityName = $(this).attr("data-city");
+    console.log(cityName);
+    $(cityID).each(function (index, elem) {
+      if (elem.name === cityName) {
+        renderWeather(elem);
+        console.log(elem);
+      }
+    });
   });
 });
