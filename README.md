@@ -10,6 +10,6 @@ Have no worries about closing the page, your favorite cities will still be remem
 
 ## Where to Find it
 
-Paul's Weather Forecaster _for the Discerning Traveler_ can be found [here](https://kirkpatrickpaul.github.io/06_weather_app/). Before you begin, it will look rather plain, but once you get the hang of it, it should look something like this:
+Paul's Weather Forecaster _for the Discerning Traveler_ can be found [here](https://kirkpatrickpaul.github.io/weather_forecaster/). Before you begin, it will look rather plain, but once you get the hang of it, it should look something like this:
 
 ![Beautiful_Forecaster](./Assets/Forecaster.jpg)
